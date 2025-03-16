@@ -40,7 +40,7 @@ end
 function DelverViewDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData()
 
-	if not self:IsCVarSet() then
+	if not self:IsCVarSet() or InCombatLockdown() then
 		return
 	end
 
