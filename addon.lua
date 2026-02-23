@@ -7,14 +7,21 @@ ns.CVAR = 'showDelveEntrancesOnMap'
 -- 	print('AddToTooltip', tooltip, pin)
 -- end
 
+local parentDelvesCache = {}
+-- Only care about bountiful delves ticking over, so just refresh this every 10 minutes
+C_Timer.NewTimer(600, function() wipe(parentDelvesCache) end)
+
 function ns.GetPointsFromMapInfo(mapInfo, parentMapID)
-	local parentDelves = {}
-	for _, delveID in ipairs(C_AreaPoiInfo.GetDelvesForMap(parentMapID)) do
-		local info = C_AreaPoiInfo.GetAreaPOIInfo(mapInfo.mapID, delveID)
-		if info then
-			parentDelves[info.name] = delveID
+	if not parentDelvesCache[parentMapID] then
+		parentDelvesCache[parentMapID] = {}
+		for _, delveID in ipairs(C_AreaPoiInfo.GetDelvesForMap(parentMapID)) do
+			local info = C_AreaPoiInfo.GetAreaPOIInfo(parentMapID, delveID)
+			if info then
+				parentDelvesCache[parentMapID][info.name] = delveID
+			end
 		end
 	end
+	local parentDelves = parentDelvesCache[parentMapID] or {}
 
 	local delves = {}
 	for _, delveID in ipairs(C_AreaPoiInfo.GetDelvesForMap(mapInfo.mapID)) do
@@ -24,6 +31,10 @@ function ns.GetPointsFromMapInfo(mapInfo, parentMapID)
 		end
 	end
 	return delves
+end
+
+function ns.OnPinAcquired(pin, info)
+	pin:SetSize(28, 28)
 end
 
 function ns.AddToTrackingMenu(owner, rootDescription, contextData, isChecked, setChecked)
