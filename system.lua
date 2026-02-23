@@ -92,6 +92,7 @@ function PinMixin:OnMouseEnter()
 
 	-- Could do this, but it'd confuse listeners because these aren't on the right map
 	-- EventRegistry:TriggerEvent("AreaPOIPin.MouseOver", self, true, self.poiInfo.areaPoiID, self.poiInfo.name or "")
+	EventRegistry:TriggerEvent("X-ImportedAreaPOIPin.MouseOver", self, true, self.originalMapID, self.poiInfo.areaPoiID, self.poiInfo.name or "")
 end
 function PinMixin:OnMouseLeave()
 	GetAppropriateTooltip():Hide()
